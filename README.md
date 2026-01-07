@@ -31,6 +31,10 @@ Given a raw FASTA file, the main script:
 
 ## Country-balanced sampling utility
 
+- scripts/pb1_country_balanced_sampling.R  
+  Country-balanced round-robin subsampling from FASTA files to reduce geographic over-representation.
+
+
 This script implements a simple round-robin sampling strategy to select a fixed number of sequences
 from large PB1 FASTA files while limiting over-representation from any single country.
 
