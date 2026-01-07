@@ -1,4 +1,4 @@
-# influenza-pb1-seq-clean-align-pipeline
+
 # Influenza PB1 sequence preprocessing pipeline (R + MAFFT)
 
 Small R scripts developed to support an undergraduate project on Influenza A PB1 sequence analysis.
