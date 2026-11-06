@@ -1,0 +1,13 @@
+# Data and outputs are not versioned
+data/
+results/
+figures/
+*.xlsx
+*.fasta
+*.fa
+*.csv
+*.pdf
+*.png
+.Rhistory
+.RData
+.Rproj.user/
