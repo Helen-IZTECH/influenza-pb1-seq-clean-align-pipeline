@@ -20,10 +20,10 @@ cols <- c("Purifying"="#2166AC","Positive (FUBAR)"="#D62728","Low signal"="#BDBD
 
 meme_pos  <- c(361, 687, 736)                      # MEME episodic-positive sites
 invariant <- fel$site[fel$alpha==0 & fel$beta==0]  # 0 substitutions -> no selection signal
-# PB1 residues within 5 A of PB2 in PDB 3A1G (binding.site, PB1-side only):
-set48 <- c(685,686,688,689,690,691,692,693,694,695,696,697,698,699,700,701,708,
-           709,710,711,712,713,714,715,717,718,719,721,722,725,726,729,734,735,
-           739,741,742,743,745,746,747,749,750,752,753,754,756,757)
+# PB1 residues within 4.5 A of native PB2 in PDB 3A1G (see find_interface_contacts.R):
+set41 <- c(685,686,688,689,690,691,692,693,695,696,697,698,699,708,709,710,711,712,
+           713,714,715,717,718,719,721,722,725,739,741,742,743,745,746,747,749,750,
+           752,753,754,756,757)
 sug14 <- c(692,695,696,698,699,715,719,722,725,746,747,750,753,754)
 
 # ---- Panel A ----
@@ -59,7 +59,7 @@ pocket_panel <- function(resset, title, sub) {
     theme(legend.position="bottom", plot.title=element_text(face="bold"),
           panel.grid.minor=element_blank(), axis.text.x=element_text(angle=90, vjust=0.5, size=7))
 }
-pB <- pocket_panel(set48, "B) PB1 5A interface set (48 residues)", "Broad structural contact set. None positive.")
+pB <- pocket_panel(set41, "B) PB1 4.5A interface set (41 residues)", "Structural contact set (4.5 A, native PB2). None positive.")
 pC <- pocket_panel(sug14, "C) Sugiyama direct-contact pocket (14 residues)", "Literature direct contacts (subset of B). None positive.")
 
 fig <- pA / pB / pC + plot_layout(heights=c(1,1,1))
