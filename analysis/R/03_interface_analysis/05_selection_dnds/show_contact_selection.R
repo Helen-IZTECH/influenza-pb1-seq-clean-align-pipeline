@@ -1,14 +1,8 @@
-# show_contact_selection.R
-# Shows FEL / FUBAR / MEME values for the 14 (Sugiyama) and 41 (4.5A) interface sets.
-# Run in the folder with fel_sites.csv, fubar_sites.csv (+ meme_sites.csv if you made it).
-
 fel <- read.csv("fel_sites.csv")
 fub <- read.csv("fubar_sites.csv")
-meme_sites <- if (file.exists("meme_sites.csv")) {
-  m <- read.csv("meme_sites.csv"); as.integer(m$site[as.logical(m$episodic_positive)])
-} else c(361, 687, 736)   # from MEME console output
+has_meme <- file.exists("meme_sites.csv")
+if (has_meme) meme <- read.csv("meme_sites.csv")
 
-# PB1 reference amino acids (A/California/04/2009) for residue identity
 REF <- paste0(
 "MDVNPTLLFLKIPAQNAISTTFPYTGDPPYSHGTGTGYTMDTVNRTHQYSEKGKWTTNTETGAPQLNPID",
 "GPLPEDNEPSGYAQTDCVLEAMAFLEESHPGIFENSCLETMEVVQQTRVDKLTQGRQTYDWTLNRNQPAA",
@@ -31,19 +25,21 @@ set41 <- c(685,686,688,689,690,691,692,693,695,696,697,698,699,708,709,710,711,7
            752,753,754,756,757)
 
 show_set <- function(S, name) {
-  d <- merge(fel[,c("site","alpha","beta","p_value","class")],
-             fub[,c("site","purifying_post","positive_post")], by="site")
+  d <- merge(fel[,c("site","p_value","class")], fub[,c("site","purifying_post","positive_post")], by="site")
+  names(d)[names(d)=="p_value"] <- "FEL_p"
+  if (has_meme) { d <- merge(d, meme[,c("site","p_value")], by="site"); names(d)[names(d)=="p_value"] <- "MEME_p" }
   d <- d[d$site %in% S, ]
-  d$aa   <- sapply(d$site, aa_of)
-  d$type <- aa_type(d$aa)
-  d$FEL  <- ifelse(d$class=="negative","purifying", ifelse(d$class=="positive","POSITIVE","-"))
-  d$MEME <- ifelse(d$site %in% meme_sites, "episodic+", "-")
-  d <- d[order(d$site), c("site","aa","type","FEL","p_value","purifying_post","positive_post","MEME")]
+  d$aa <- sapply(d$site, aa_of); d$type <- aa_type(d$aa)
+  d$FEL <- ifelse(d$class=="negative","purifying", ifelse(d$class=="positive","POSITIVE","-"))
+  keep <- c("site","aa","type","FEL","FEL_p","purifying_post","positive_post")
+  if (has_meme) keep <- c(keep,"MEME_p")
+  d <- d[order(d$site), keep]
   cat("\n===============  ", name, "  (", nrow(d), " residues)  ===============\n", sep="")
-  print(d, row.names = FALSE)
-  cat(sprintf("\nSUMMARY  FEL purifying %d | FEL positive %d | FUBAR pur>=0.9 %d | FUBAR pos>=0.9 %d | MEME episodic %d\n",
+  print(d, row.names=FALSE)
+  cat(sprintf("\nSUMMARY  FEL purifying %d | positive %d | FUBAR pur>=0.9 %d | pos>=0.9 %d%s\n",
       sum(d$FEL=="purifying"), sum(d$FEL=="POSITIVE"),
-      sum(d$purifying_post>=0.9), sum(d$positive_post>=0.9), sum(d$MEME=="episodic+")))
+      sum(d$purifying_post>=0.9), sum(d$positive_post>=0.9),
+      if (has_meme) sprintf(" | MEME p<=0.1: %d", sum(d$MEME_p<=0.1)) else ""))
 }
-show_set(set14, "14 Sugiyama direct contacts")
-show_set(set41, "41 (4.5A interface set)")
+show_set(set14, "14 Sugiyama")
+show_set(set41, "41 (4.5A)")
