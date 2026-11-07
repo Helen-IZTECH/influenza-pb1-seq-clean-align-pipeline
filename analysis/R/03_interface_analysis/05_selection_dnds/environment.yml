@@ -1,0 +1,8 @@
+name: hyphy
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - hyphy
+  - iqtree
+  - python>=3.9
