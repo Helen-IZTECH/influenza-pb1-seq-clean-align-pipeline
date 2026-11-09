@@ -49,6 +49,16 @@ The pipeline runs in three ordered stages.
 Within stage 3, scripts 02–04 reuse objects from `01_contact_conservation.R`, so
 run them in order.
 
+Two further stages live in sub-folders and are run independently (each has its own README):
+
+| Folder | What it does |
+|---|---|
+| `05_selection_dnds/` | Site-wise dN/dS (HyPhy FEL / FUBAR / MEME) on a codon alignment; per-site CSVs. Setup via `environment.yml`, run with `run_selection.sh`. |
+| `06_ddg_binding/` | EvoEF2 binding ΔΔG scan of the interface, for **PB1** (`bash run_ddg.sh PB1`) or **PB2** (`bash run_ddg.sh PB2`); joins the stage-05 selection tables. Works on Linux, WSL and macOS. |
+
+Order for the selection + energetics layer: stage 05 (selection tables) can be run
+before or after 06 (ΔΔG); they only meet in `06_ddg_binding/merge_ddg_selection.R`.
+
 ## Conventions
 
 Each script starts with a `CONFIG` block — edit the input/output paths there.
