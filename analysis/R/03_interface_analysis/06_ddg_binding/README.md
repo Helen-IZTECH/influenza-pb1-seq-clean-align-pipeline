@@ -16,20 +16,43 @@ the complex?
 
 ## Pipeline
 
+Works on Linux, WSL and **macOS** (needs `git`, a C++ compiler, `python3`,
+`curl`, `R`; on a Mac run `xcode-select --install` once).
+
 ```bash
-# 1. build EvoEF2, clean + repair 3A1G, scan 41 × 19 = 779 mutants
-bash run_ddg.sh                     # -> ddg_all.csv
+# 0. quick check that your setup works (2 residues, ~15 s)
+bash run_ddg.sh PB2 test
+
+# 1. PB1 side: build EvoEF2, clean + repair 3A1G, scan 41 x 19 = 779 mutants
+bash run_ddg.sh PB1                 # -> ddg_all.csv
+
+# 1b. PB2 side: contact residues are found automatically (4.5 A to PB1)
+bash run_ddg.sh PB2                 # -> ddg_all_PB2.csv   (~3 min, 25 x 19 = 475 mutants)
 
 # 2. collapse to per-residue, join FEL/FUBAR selection, classify
-Rscript merge_ddg_selection.R       # -> ddg_vs_selection.csv  (+ console stats)
+Rscript merge_ddg_selection.R       # PB1 -> ddg_vs_selection.csv
+Rscript merge_ddg_selection.R ddg_all_PB2.csv fel_sites_PB2.csv \
+        fubar_sites_PB2.csv ddg_vs_selection_PB2.csv        # PB2
 
-# 3. figures
+# 3. figures (PB1)
 Rscript ddg_figure.R                # -> FIG_ddg.png (ddG vs conservation)
 Rscript convergence_figure.R        # -> FIG_convergence.png (3 lines of evidence)
 ```
 
-Inputs expected in this folder: `3A1G.pdb` (raw, in `struct/`), and the
-selection tables `fel_sites.csv`, `fubar_sites.csv` from stage 05.
+Inputs expected in this folder: the selection tables `fel_sites.csv`,
+`fubar_sites.csv` from stage 05 (PB2: `fel_sites_PB2.csv`,
+`fubar_sites_PB2.csv`, with PB2 residue numbers in the `site` column).
+The PDB is downloaded automatically; if your network blocks it, save
+https://files.rcsb.org/download/3A1G.pdb as `struct/3A1G.pdb` yourself.
+
+### Troubleshooting (macOS)
+
+- `g++: command not found` -> run `xcode-select --install`.
+- EvoEF2 compile warnings about `printf` format are harmless; only an
+  `error:` line matters (send it to the maintainer).
+- Reproducibility check: `bash run_ddg.sh PB1 test` should give
+  `685,D,A,-0.52` as the first data row of `test_ddg_all.csv`.
+- PB2 residue numbers <= 0 in 3A1G (expression tag) are skipped automatically.
 
 ## Method notes
 
@@ -74,8 +97,8 @@ than any single computational metric.
 
 | file | what |
 |------|------|
-| `run_ddg.sh` | build EvoEF2, clean/repair structure, run the 779-mutant scan |
-| `compute_ddg.py` | per-mutant EvoEF2 BuildMutant + ComputeBinding driver |
+| `run_ddg.sh` | `PB1` or `PB2` [`test`]: build EvoEF2, fetch/clean/repair 3A1G, run the scan |
+| `compute_ddg.py` | per-mutant EvoEF2 BuildMutant + ComputeBinding driver (`--chain A|B`, `--residues default|auto|list`) |
 | `merge_ddg_selection.R` | per-residue ΔΔG + FEL/FUBAR join + classification |
 | `ddg_figure.R` | ΔΔG vs conservation (box by class + scatter) |
 | `convergence_figure.R` | evolution × structure × Sugiyama experiment matrix |
@@ -84,6 +107,10 @@ than any single computational metric.
 
 ## Caveats
 
+- PB1 uses the fixed 41-residue list from the paper. `--residues auto` (4.5 A
+  heavy-atom contact) gives 39 PB1 residues, not the identical set (it misses
+  741, 745, 749, 752 and adds 729, 735), so the fixed list is kept for PB1.
+  PB2 uses `auto`.
 - EvoEF2 ΔΔG is a **prediction**, not a measurement; Sugiyama's assays are the
   experimental ground truth where the two disagree.
 - `mean_ddG` averages over all 19 substitutions and over-weights unlikely bulky

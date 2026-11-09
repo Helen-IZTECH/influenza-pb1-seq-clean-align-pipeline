@@ -14,9 +14,20 @@
 #   purifying : FUBAR purifying posterior >= 0.9  (strong purifying signal)
 #   tolerant  : everything else (beta > 0, weak/no purifying signal)
 
-ddg  <- read.csv("ddg_all.csv")
-fel  <- read.csv("fel_sites.csv")
-fub  <- read.csv("fubar_sites.csv")
+# Usage:  Rscript merge_ddg_selection.R                         (PB1 defaults)
+#         Rscript merge_ddg_selection.R ddg_all_PB2.csv fel_sites_PB2.csv \
+#                                       fubar_sites_PB2.csv ddg_vs_selection_PB2.csv
+# For PB2 the selection tables must use PB2 residue numbering in the `site`
+# column (alignment starting at M1 = site 1).
+args <- commandArgs(trailingOnly = TRUE)
+f_ddg <- if (length(args) >= 1) args[1] else "ddg_all.csv"
+f_fel <- if (length(args) >= 2) args[2] else "fel_sites.csv"
+f_fub <- if (length(args) >= 3) args[3] else "fubar_sites.csv"
+f_out <- if (length(args) >= 4) args[4] else "ddg_vs_selection.csv"
+
+ddg  <- read.csv(f_ddg)
+fel  <- read.csv(f_fel)
+fub  <- read.csv(f_fub)
 
 # per-residue ddG summary
 agg <- aggregate(ddG_bind ~ pos, data = ddg,
@@ -35,7 +46,7 @@ res$class <- with(res, ifelse(alpha == 0 & beta == 0, "invariant",
 
 out <- res[, c("pos", "class", "beta", "purifying_post", "mean_ddG", "min_ddG")]
 out <- out[order(out$pos), ]
-write.csv(out, "ddg_vs_selection.csv", row.names = FALSE)
+write.csv(out, f_out, row.names = FALSE)
 
 # quick console summary
 cat("n per class:\n"); print(table(out$class))
