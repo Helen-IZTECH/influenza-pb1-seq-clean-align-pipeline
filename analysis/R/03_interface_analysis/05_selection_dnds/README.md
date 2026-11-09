@@ -18,12 +18,29 @@ representative H1N1pdm09 set (2009–2025).
 
 ## How to run
 
+(PB1 shown first; PB2 instructions just below.)
+
 ```bash
 conda env create -f environment.yml
 conda activate hyphy
 # place pb1_codon_nostop.fasta (in-frame codon alignment, terminal stop removed) here
 bash run_selection.sh
 ```
+
+### PB2
+
+```bash
+# place pb2_codon_nostop.fasta here (in-frame codon alignment, terminal stop removed:
+# PB2 is 2280 nt -> 2277 nt)
+bash run_selection.sh PB2
+```
+
+Outputs: `fel_sites_PB2.csv`, `fubar_sites_PB2.csv`, `meme_sites_PB2.csv`, `id_map_pb2.tsv`.
+Important: the `site` column is the **codon index in your alignment**. It equals the PB2
+residue number only if the alignment starts at codon 1 (M1) with no gaps/insertions before
+the N-terminal domain — check this before joining with the ΔΔG table (stage 06).
+`is_contact` marks the 25 PB2 residues from the 3A1G contact scan (4.5 A); pass your own
+list with `python3 parse_fel.py PB2 1,2,3,...`.
 
 ## Input requirements (why Datamonkey/HyPhy errored before)
 
