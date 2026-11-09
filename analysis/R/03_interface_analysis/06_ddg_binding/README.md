@@ -101,6 +101,7 @@ than any single computational metric.
 | `compute_ddg.py` | per-mutant EvoEF2 BuildMutant + ComputeBinding driver (`--chain A|B`, `--residues default|auto|list`) |
 | `merge_ddg_selection.R` | per-residue ΔΔG + FEL/FUBAR join + classification |
 | `ddg_figure.R` | ΔΔG vs conservation (box by class + scatter) |
+| `pymol_interface_map.py` | PyMOL structural map of 3A1G: residues coloured by selection class and by mean ΔΔG → `FIG_pymol_*.png`, `interface_map.pse` |
 | `convergence_figure.R` | evolution × structure × Sugiyama experiment matrix |
 | `../../../results/ddg_all.csv` | 779 rows: pos, wt, mut, ddG_bind |
 | `../../../results/ddg_vs_selection.csv` | per-residue: pos, class, beta, purifying_post, mean_ddG, min_ddG |
