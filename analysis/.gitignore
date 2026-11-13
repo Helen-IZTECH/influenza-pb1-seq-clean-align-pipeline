@@ -11,3 +11,11 @@ figures/
 .Rhistory
 .RData
 .Rproj.user/
+
+# Exceptions: derived results that are safe to publish.
+# Per-site selection statistics -- site numbers and statistics only, no
+# sequences and no GISAID identifiers. Raw sequences, HyPhy JSONs and
+# id_map.tsv remain excluded by the rules above.
+!R/03_interface_analysis/05_selection_dnds/fel_sites.csv
+!R/03_interface_analysis/05_selection_dnds/fubar_sites.csv
+!R/03_interface_analysis/05_selection_dnds/meme_sites.csv
